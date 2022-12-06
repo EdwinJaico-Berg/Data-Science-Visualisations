@@ -1,9 +1,9 @@
-import time
+import sys
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 
+from IPython.display import display, clear_output
 from sklearn.datasets import make_blobs
 
 def get_random_centroids(k: int, x: np.array, y: np.array) -> np.array:
@@ -45,37 +45,42 @@ def calculate_centroids(X, k, cluster_labels) -> np.array:
 
     return new_centroids
 
-def update(X, k, cluster_labels, cent, scat):
-    # Calculate new centroids
-    new_centroids = calculate_centroids(X, k, cluster_labels)
+def plot(x, y, cluster_labels, centroids):
+    """Displays the scatter plot."""
+    clear_output(wait=True)
+    display(plt.gcf())
+    plt.clf()
+    plt.title("K-Means Clustering")
+    sns.scatterplot(x=x, y=y, hue=cluster_labels)
+    sns.scatterplot(x=centroids[:,0], y=centroids[:,1])
+    plt.legend('',frameon=False)
+    plt.show(block=False)
+    plt.pause(1)
 
-    # Update the positions of the centroids
-    cent.set_offsets(new_centroids)
 
-    scat.set_array(assign_centroids(X, new_centroids))
-
-    centroids = new_centroids
-
-    return centroids
-
-
-def main(k: int=3, max_iters: int=1000) -> None:
-    X, _ = make_blobs(n_samples=100, centers=k, random_state=170)
+def main(k: int=3, max_iters: int=100) -> None:
+    X, _ = make_blobs(n_samples=1000, centers=k)
 
     x, y = X[:, 0], X[:, 1]
     
     centroids = get_random_centroids(k, x, y)
-
-    cluster_labels = assign_centroids(X, centroids)
     
-    fig, ax = plt.subplots()
+    for _ in range(max_iters):
+        # Generate the cluster labels
+        cluster_labels = assign_centroids(X, centroids)
 
-    scat = ax.scatter(x=x, y=y, c=cluster_labels)
-    cent = ax.scatter(x=centroids[:,0], y=centroids[:,1], c='r')
+        # Plot the graph
+        plot(x, y, cluster_labels, centroids)
 
-    anim = animation.FuncAnimation(fig, update(X, k, cluster_labels, cent, scat), frames=range(1000), interval=500)
+        # Store old centroids
+        centroids_old = centroids
+        
+        # Update the centroids
+        centroids = calculate_centroids(X, k, cluster_labels)
 
-    plt.show()
+        # Check convergence
+        if np.array_equal(centroids, centroids_old):
+            break
 
 
 if __name__ == "__main__":
