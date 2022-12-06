@@ -1,0 +1,3 @@
+# Data Science Visualisations
+
+This repository contains a collection of data science visualizations that showcase various algorithms that are popular in Data Science. The goal of this repository is to provide a valuable resource for data scientists, analysts, and anyone interested in exploring and understanding these alogrithms through visualization - a tool I personally find very helpful. The visualizations are created using various tools and libraries, such as Matplotlib and Seaborn.
