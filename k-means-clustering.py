@@ -33,7 +33,7 @@ def assign_centroids(X: np.array, centroids: np.array) -> np.array:
     
     return cluster_labels
 
-def calculate_centroids(X, k, cluster_labels) -> np.array:
+def calculate_centroids(X: np.array, k: int, cluster_labels: np.array) -> np.array:
     """Calculate the updated centroid position."""
     # Create an array to store the new centroids
     new_centroids = np.zeros((k, X.shape[1]))
@@ -45,7 +45,7 @@ def calculate_centroids(X, k, cluster_labels) -> np.array:
 
     return new_centroids
 
-def plot(x, y, cluster_labels, centroids):
+def plot(x: np.array, y: np.array, cluster_labels:np.array, centroids:np.array) -> None:
     """Displays the scatter plot."""
     clear_output(wait=True)
     display(plt.gcf())
@@ -54,15 +54,30 @@ def plot(x, y, cluster_labels, centroids):
     sns.scatterplot(x=x, y=y, hue=cluster_labels)
     sns.scatterplot(x=centroids[:,0], y=centroids[:,1])
     plt.legend('',frameon=False)
+    plt.xticks([])
+    plt.yticks([])
     plt.show(block=False)
     plt.pause(1)
 
 
-def main(k: int=3, max_iters: int=100) -> None:
-    X, _ = make_blobs(n_samples=1000, centers=k)
+def main() -> None:
 
+    # Check usage
+    if len(sys.argv) not in [3, 4]:
+        sys.exit("Usage: python k-means-clustering.py [clusters] [k] [max_iters]")
+
+    # Parse command line arguments
+    clusters = int(sys.argv[1])
+    k = int(sys.argv[2])
+    max_iters = int(sys.argv[3]) if len(sys.argv) == 4 else 100
+
+    # Create the blobs
+    X, _ = make_blobs(n_samples=1000, centers=clusters)
+
+    # Extract x and y values
     x, y = X[:, 0], X[:, 1]
     
+    # Generate the initial random centroids
     centroids = get_random_centroids(k, x, y)
     
     for _ in range(max_iters):
